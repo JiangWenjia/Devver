@@ -19,7 +19,10 @@ dispatch_queue_t
 > 添加到串行的队列的任务，GCD会FIFO地按顺序取出，放到对应的队列中。
 
 
-<div align="center"> <img src="../imags/475EAD79-6632-484D-A610-13EDD8071820-1.png"/> </div><br>
+<div align="center">
+![475EAD79-6632-484D-A610-13EDD8071820](media/475EAD79-6632-484D-A610-13EDD8071820.png)
+
+</div>
 
 
 
