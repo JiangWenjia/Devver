@@ -3,33 +3,9 @@ Grand Central Dispatch
 
 > dispatch 英 [dɪˈspætʃ] 派遣，调度;
 
-## 任务
-表示要添加到队列的操作，在GCD中为Block
+是异步执行任务的技术之一。开发者只需要定义想执行的任务并追加到适当的Dispatch Queue 中，GCD
+就能生成必要的线程并计划执行任务。
 
-执行（调度派发）任务的方式有两种： 同步执行（sync）和异步执行（async）
-
-### 同步执行 sync
-> sync 英[sɪŋk] n.	同时，同步;
-
-会**阻塞**当前线程，并**等待**Block中的任务执行完成完毕后，当前的线程才会继续执行
-
-对应的函数：
-
-```objc
-void dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
-```
-第一个参数为执行队列，第二个参数为执行的block
-
-### 异步执行
-> async	英[ə'zɪŋk] adj.异步的
-
-**不会阻塞**当前线程，**不用等待**会直接往下执行
-
-对应的函数：
-
-```objc
-void dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
-```
 
 ## 队列
 用于存放任务，分为两种：**串行队列** 和 **并发队列**
@@ -42,8 +18,11 @@ dispatch_queue_t
 ### 串行队列
 > 添加到串行的队列的任务，GCD会FIFO地按顺序取出，放到对应的队列中。
 
-sync：当前的线程，顺序执行
-asyn：其他的线程，顺序执行
+
+<div align="center"> <img src="../imags/475EAD79-6632-484D-A610-13EDD8071820-1.png"/> </div><br>
+
+
+
 
 ### 并行队列
 > 添加到并行队列的任务，GCD会多个同时，放到队列中执行
@@ -88,6 +67,36 @@ dispatch_queue_create(const char *_Nullable label,dispatch_queue_attr_t _Nullabl
 dispatch_queue_t queue = dispatch_queue_create("queue.name", DISPATCH_QUEUE_CONCURRENT);		
 ```
 
-https://blog.csdn.net/liuyinghui523/article/details/50618092
+## 任务
+表示要添加到队列的操作，在GCD中为Block
+
+执行（调度派发）任务的方式有两种： 同步执行（sync）和异步执行（async）
+
+### 同步执行 sync
+> sync 英[sɪŋk] n.	同时，同步;
+
+会**阻塞**当前线程，并**等待**Block中的任务执行完成完毕后，当前的线程才会继续执行
+
+对应的函数：
+
+```objc
+void dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
+```
+第一个参数为执行队列，第二个参数为执行的block
+
+### 异步执行
+> async	英[ə'zɪŋk] adj.异步的
+
+**不会阻塞**当前线程，**不用等待**会直接往下执行
+
+对应的函数：
+
+```objc
+void dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
+```
+
+
+
+
 
 
