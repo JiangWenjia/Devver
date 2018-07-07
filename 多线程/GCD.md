@@ -249,4 +249,59 @@ dispatch_queue_t queue = dispatch_queue_create("my.concurrent.queue", DISPATCH_Q
 2018-07-07 22:54:02.021112+0800 GCD[2560:98826] C-1 read: 2
 ```
 
+## dispatch_apply
+> 指定次数的追加block到队列中，并等待其全部执行结束
+
+```
+	dispatch_queue_t queue = dispatch_queue_create("my.concurrent.queue", DISPATCH_QUEUE_CONCURRENT);
+	NSArray *nums = @[@1,@2,@3,@4];
+	dispatch_async(queue, ^{
+		NSLog(@"开始");
+		dispatch_apply(nums.count, queue, ^(size_t index) {
+			NSLog(@"%zu-%@",index,nums[index]);
+		});
+		NSLog(@"结束");
+	});
+	
+2018-07-07 23:11:45.833193+0800 GCD[3011:111417] 开始
+2018-07-07 23:11:45.833364+0800 GCD[3011:111417] 0-1
+2018-07-07 23:11:45.833511+0800 GCD[3011:111417] 1-2
+2018-07-07 23:11:45.833627+0800 GCD[3011:111417] 2-3
+2018-07-07 23:11:45.833750+0800 GCD[3011:111417] 3-4
+2018-07-07 23:11:45.833982+0800 GCD[3011:111417] 结束
+```
+
+## 队列的挂起和恢复
+
+```
+dispatch_suspend(queue);
+dispatch_resume(queue);
+```
+## dispatch_once
+> 常用于单例等，线程安全并且只执行一次的操作
+
+```
+static dispatch_once_t once;
+dispatch_once(&once, ^{
+	// 单次执行
+});
+```
+
+##  dispatch_semaphore_t
+> dispatch_semaphore_wait 当信号量大于0的时候，减一不等待，否则等待。
+> 当做锁使用
+
+
+```objc
+	static dispatch_semaphore_t lock;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		lock = dispatch_semaphore_create(1);
+	});
+	
+	dispatch_semaphore_wait(lock,DISPATCH_TIME_FOREVER);
+	//.......
+	dispatch_semaphore_signal(lock);
+```
+
 
