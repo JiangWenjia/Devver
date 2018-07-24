@@ -162,4 +162,35 @@ RACSignal *availableSignal = [self.userNameTextField.rac_textSignal map:^(NSStri
 }
 ```
 
+### RACMulticastConnection
+ > 为了消除 RACSignal 被订阅后block被执行多次
+ 
+ 使用方法：
+ 1. 通过信号 [signal publish]
+ 2. 订阅信号
+ 3. 连接信号 [connect connect]
+
+
+```objc
+	RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		NSLog(@"发送数据");
+		[subscriber sendNext:@(1)];
+		return nil;
+	}];
+	
+	RACMulticastConnection *connect = [signal publish];
+	// [connect connect]; 会执行signal中的信号，但是订阅者后订阅的接收不到信号
+	
+	[connect.signal subscribeNext:^(id x) {
+		NSLog(@"1");
+	}];
+	
+	[connect.signal subscribeNext:^(id x) {
+		NSLog(@"2");
+	}];
+	
+	//注意连接放到了订阅之后
+	[connect connect];
+```
+
 
