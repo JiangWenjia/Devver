@@ -193,4 +193,98 @@ RACSignal *availableSignal = [self.userNameTextField.rac_textSignal map:^(NSStri
 	[connect connect];
 ```
 
+# 值的操作
+
+### bind 
+> 信号转发
+ 
+ 信号绑定后对数据进行处理，返回一个新的信号
+
+
+```
+- (void)bind {
+	
+	RACSubject *subject = [RACSubject subject];
+	
+	RACSignal *bindSignal  = [subject bind:^RACStreamBindBlock{
+		
+		return ^ RACStream * (NSNumber *value, BOOL *stop) {
+		
+			NSLog(@"收到数据:%@",value);
+			//处理订阅的信号
+			return [RACSignal return:@(value.integerValue+1)];
+		};
+	}];
+	
+	
+	[bindSignal subscribeNext:^(id x) {
+		NSLog(@"订阅者收到数据:%@",x);
+	}];
+	
+	[subject sendNext:@(1)];
+}
+```
+
+### distinctUntilChanged & map & flattenMap
+ 
+ - distinctUntilChanged: 去重，前后两次一样只会发送一次
+ 
+ - map： 把信号发送的值，隐射成其他值（类型）
+ 
+ - flattenMap： 把值隐射成信号，可以直接订阅
+
+
+```objc
+	RACSubject *subject = [RACSubject subject];
+	
+	[[[[subject distinctUntilChanged] map:^id(id value) {
+		return [NSString stringWithFormat:@"%@", value];
+	}] flattenMap:^RACStream *(NSString *value) {
+		NSLog(@"%@",value);
+		return [RACSignal return:[NSString stringWithFormat:@"flat-%@",value]];
+	}] subscribeNext:^(id x) {
+		NSLog(@"订阅到:%@",x);
+	}];
+	
+	[subject sendNext:@(1)];
+	[subject sendNext:@(1)]; //只会收到一次
+	[subject sendNext:@(2)];
+```
+
+### reduceEach
+ 
+ > 聚合元组值类型信号,返回聚合值
+
+
+```objc
+- (void)reduce {
+	
+	RACSignal *signal = [RACSignal return:RACTuplePack(@(3),@(4))];
+	[[signal reduceEach:^id(NSNumber *first, NSNumber *second){
+		return @(first.integerValue + second.integerValue);
+	}] subscribeNext:^(id x) {
+		NSLog(@"%@",x);
+	}];
+}
+```
+
+### scan
+
+ > 聚合前一个信号值和下一个信号值
+
+
+```objc
+- (void)scan {
+	RACSequence *nums = @[@1, @2, @3].rac_sequence;
+	
+	[[nums scanWithStart:@4 reduce:^id(NSNumber *running, NSNumber *next) {
+		return @(running.integerValue + next.integerValue);
+	}].signal subscribeNext:^(id x) {
+		NSLog(@"合为 %@", x); // 5 7 10
+	} completed:^{
+		
+	}];
+}
+```
+
 
