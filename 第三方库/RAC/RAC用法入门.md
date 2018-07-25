@@ -447,3 +447,186 @@ RACSignal *availableSignal = [self.userNameTextField.rac_textSignal map:^(NSStri
 }
 ```
 
+
+## 组合操作
+
+### contact
+ 
+ A 发送信号完成之后 B 才开始发送，按顺序contact
+ 
+ 例如 A 请求发送了， A请求的数据需要刷新UI 之后B请求拿到A请求的数据，发起请求
+ 之后再根据B请求的数据刷新界面
+ 
+ 注意两个点：
+ 1. 前一个信号，必须发送完成，下一个信号才会执行，顺序性
+ 2. 所有联结的信号订阅者都会收到信号
+
+ 
+```objc
+- (void)contact {
+	
+	RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		
+		[subscriber sendNext:@"A"];
+		//必须发送complete B信号才会收到
+		[subscriber sendCompleted];
+		
+		return nil;
+	}];
+	
+	RACSignal *signalB = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		
+		[subscriber sendNext:@"B"];
+		[subscriber sendCompleted];
+		
+		return nil;
+	}];
+	
+	//A， B 按顺序都会收到结果
+	[[RACSignal concat:@[signalA, signalB]] subscribeNext:^(id x) {
+		NSLog(@"%@", x);
+	}];
+	
+}
+```
+
+### merge & zip
+ merge : 将多个信号聚合为一个信号，没有先后顺序 (当做一个信号)
+ 
+ zip: 将多个信号压缩为一个信号，所有的压缩的信号，都发送一次了，zip信号才会发送（一次为一组）
+
+
+```objc
+- (void)mergeAndZip {
+	RACSubject *s1 = [RACSubject subject];
+	RACSubject *s2 = [RACSubject subject];
+	RACSubject *s3 = [RACSubject subject];
+	
+	[[RACSignal merge:@[s1, s2, s3]] subscribeNext:^(id x) {
+		NSLog(@"%@", x);
+	}];
+	
+	[[RACSignal zip:@[s1, s2, s3]] subscribeNext:^(id x) {
+		NSLog(@"zip : %@", x);
+		RACTupleUnpack(NSNumber *num1,NSNumber *num2,NSNumber *num3) = x;
+		NSLog(@"zip[1]:%@",num2);
+	}];
+	
+	
+	
+	[s1 sendNext:@1];
+	[s2 sendNext:@2];
+	[s3 sendNext:@3];
+	
+	
+	[s1 sendNext:@6];
+	[s2 sendNext:@7];
+	[s3 sendNext:@8];
+}
+```
+
+### then
+ 
+ 联结信号 A信号发送完成后，B信号才会发送
+ 
+ 结果为B的信号，如果A信号发送错误，直接结束
+ 
+ 可以理解为忽略前面信号，只取最后一个信号的contact
+
+
+```objc
+- (void)then {
+	RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		
+		[subscriber sendNext:@"A"];
+//		必须发送complete B信号才会收到
+		[subscriber sendCompleted];
+//		[subscriber sendError:nil]; 这里发送错误 订阅者会受到错误
+		
+		return nil;
+	}];
+	
+	RACSignal *signalB = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		
+		[subscriber sendNext:@"B"];
+		[subscriber sendCompleted];
+		
+		return nil;
+	}];
+	
+	RACSignal *signal = [signalA then:^RACSignal *{
+		return signalB;
+	}];
+	
+	[signal subscribeNext:^(id x) {
+		NSLog(@"%@", x);
+	} error:^(NSError *error) {
+		NSLog(@"error");
+	}];
+
+}
+
+```
+
+### takeUntil & takeUntilReplacement
+ 
+ takeUntil ： 信号B，发送信号之后，A将不再发送信号
+ 
+ takeUntilReplacement： 信号B，发送信号后，订阅者将不再接收A的信号，代替为接收B信号
+
+
+```objc
+- (void)takeUntil {
+	RACSubject *subject = [RACSubject subject];
+	RACSubject *until = [RACSubject subject];
+	
+	[[subject takeUntil:until] subscribeNext:^(id x) {
+		NSLog(@"%@", x);// 1 2 until 发送，信号会发送完成
+	}];
+	
+	[[subject takeUntilReplacement:until] subscribeNext:^(id x) {
+		NSLog(@"--%@", x);// 1 2 0 9 until信号发送后会取代原信号
+	}];
+	
+	
+	[subject sendNext:@1];
+	[subject sendNext:@2];
+	[until sendNext:@0];
+	[subject sendNext:@3];
+	[until sendNext:@9];
+	[until sendCompleted];
+	[subject sendNext:@4];
+}
+
+```
+
+
+### combineLast
+ 
+ 聚合最新的信号值，聚合信号至少发送一次信号,常配合 reduce
+
+ 
+ | letter |-  A  -  B  -  -   -   C  -    -   D
+ | number |-  -  -   1  -  2   -   3   -   -    4
+ | new   |-  -  -  -  B1 -  B2 C2 C3 -  D3 D4
+ -------------- time ----------------------->
+ 
+ 
+```objc
+- (void)combineLast {
+	
+	[[RACSignal combineLatest:@[self.userNameTextField.rac_textSignal, self.passwordTextField.rac_textSignal]] subscribeNext:^(id x) {
+		NSLog(@"%@----%@", x[0], x[1]);
+	}];
+	
+	
+	RACSignal *signal = [RACSignal combineLatest:@[field.rac_textSignal, field1.rac_textSignal] reduce:^id _Nonnull(NSString *account , NSString *pwd){
+		
+		return @(account.length && pwd.length);
+	}];
+	
+	RAC(btn,enabled) = signal;
+}
+```
+
+
