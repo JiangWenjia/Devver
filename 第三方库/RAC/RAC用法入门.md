@@ -288,3 +288,162 @@ RACSignal *availableSignal = [self.userNameTextField.rac_textSignal map:^(NSStri
 ```
 
 
+### filter & ignore & take & takeLast & skip
+ 
+ filter: 过滤为返回false的值
+ 
+ ignore： 忽略某个值
+ 
+ take： 从前往后取多少个值
+ 
+ takeLast :  从后往前取多少个值，信号必须sendCompleted之后，才会收到值
+ 
+ skip： 从前往后跳过多个值
+
+
+```objc
+	RACSubject *subject = [RACSubject subject];
+	
+	RACSignal *siganl = [[subject filter:^BOOL(NSNumber *value) {
+		return value.integerValue > 3;
+	}] ignore:@(4)];
+	
+	[[siganl take:2] subscribeNext:^(id x) {
+		NSLog(@"1：%@",x); // 5,6
+	}];
+	 
+	[[siganl takeLast:2] subscribeNext:^(id x) {
+		NSLog(@"2: %@",x);// 6 7
+	}];
+	
+	[[subject skip:2] subscribeNext:^(id x) {
+		NSLog(@"3: %@",x);//7
+	}];
+	
+	[subject sendNext:@(4)];
+	[subject sendNext:@(5)];
+	[subject sendNext:@(6)];
+	[subject sendNext:@(7)];
+	
+	[subject sendCompleted];
+```
+
+### startWith & repeat
+ 
+ startWith： 会在开始之前多添加一个信号值
+ 
+ repeat： 会一直循环，需要手动取消
+
+
+
+```objc
+	RACSignal *signal = @[@1, @2, @3, @4].rac_sequence.signal;
+	
+	[[signal startWith:@9] subscribeNext:^(id x) {
+		NSLog(@"%@", x); // 9 1 2 3 4
+	}];
+	
+	RACDisposable *dispose = [[signal repeat] subscribeNext:^(id x) {
+		NSLog(@"repeat:%@", x); // 1 2 3 4 ....循环
+	}];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[dispose dispose];
+	});
+```
+
+### retry
+ 
+ retry ： 如果 sendError 之后，会重试
+ 
+ retry：2 发送error之后会重试2次
+ retry    直到成功
+
+
+```objc
+- (void)retry {
+	__block int time = 0;
+	RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+		NSLog(@"重试");
+		time++;
+		if(time > 100) {
+			[subscriber sendNext:@1];
+		}else {
+			[subscriber sendError:nil];
+		}
+		return nil;
+	}];
+	
+	[[signal retry:2] subscribeNext:^(id x) {
+		NSLog(@"2--try: %@",x); // 结果会受到下面一个订阅者的retry的影响，所以要分开测试，因为time也会被加
+	} error:^(NSError *error) {
+		NSLog(@"2--try -error"); //重试两次（3次执行）没有成功后会发送失败
+	}];
+	
+	
+	[[signal retry] subscribeNext:^(id x) {
+		NSLog(@"---try: %@",x);
+	}];
+	
+}
+```
+
+
+### collect & aggregate
+
+ collect 会将信号所有的值，整合为一个数组发送
+ 
+ aggregate: 将所有的信号聚合为一个值发送 相当于scan 最后一次值
+
+
+```objc
+- (void)collect {
+	
+	[[@[@1, @2, @3, @4].rac_sequence.signal collect] subscribeNext:^(id x) {
+		NSLog(@"%@ %@", [x class],x);//array
+	}];
+	
+	
+	[[@[@1, @2, @3, @4].rac_sequence.signal aggregateWithStart:@9 reduce:^id(NSNumber *running,NSNumber *next) {
+		NSLog(@"%@----%@",running,next);
+		return @(running.integerValue + next.integerValue);
+	}] subscribeNext:^(id x) {
+		NSLog(@"---> %@", x); // ----> 19
+	}];
+	
+}
+```
+
+
+## 时间操作
+
+### delay & throttle
+ 
+ delay： 延时多少秒后，发送信号
+ 
+ throttle： 节流，比如节流1秒，1秒内发送的信号，会取最新的信号
+
+
+```objc
+- (void)time {
+	NSLog(@"---");
+	[[@[@1, @2, @3, @4].rac_sequence.signal delay:1] subscribeNext:^(id x) {
+		NSLog(@"---%@",x);
+	}];
+	
+	RACSubject * subject = [RACSubject subject];
+	
+	[[subject throttle:1] subscribeNext:^(id x) {
+		NSLog(@"%@", x);  // 注意结果是 2 4 不是1，3取连续发送的时候取最新的信号
+	}];
+	
+	[subject sendNext:@1];
+	[subject sendNext:@2];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[subject sendNext:@3];
+		[subject sendNext:@4];
+	});
+}
+```
+
