@@ -601,6 +601,7 @@ RACSignal *availableSignal = [self.userNameTextField.rac_textSignal map:^(NSStri
 ```
 
 
+
 ### combineLast
  
  聚合最新的信号值，聚合信号至少发送一次信号,常配合 reduce
@@ -628,5 +629,69 @@ RACSignal *availableSignal = [self.userNameTextField.rac_textSignal map:^(NSStri
 	RAC(btn,enabled) = signal;
 }
 ```
+
+## 降阶操作
+
+### ifThenElse
+ 
+ if 信号A的bool值为yes 发送then信号 否则 发送 else信号
+ 
+```objc
+- (void)ifThenElse {
+	RACSignal *signalA = @[@1, @2, @3].rac_sequence.signal;
+	RACSignal *signalB = @[@4, @5, @6].rac_sequence.signal;
+	RACSubject *condition = [RACSubject subject];
+	
+	[[RACSignal if:condition then:signalA else:signalB] subscribeNext:^(id x) {
+		NSLog(@"%@", x); // 1,2,3 ====> 4,5,6  ====> 4,5,6
+	}];
+	
+	[condition sendNext:@YES];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[condition sendNext:@NO];
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			[condition sendNext:@NO];
+		});
+	});
+}
+```
+
+### switchToLast
+ 信号的降阶， 取最新的信号
+ 
+ 降阶： 原来是信号中的信号，降阶后为信号
+
+
+```objc
+	RACSubject *signalOfSignal = [RACSubject subject];
+	RACSubject *subject1 = [RACSubject subject];
+	RACSubject *subject2 = [RACSubject subject];
+	RACSubject *subject3 = [RACSubject subject];
+	
+	[signalOfSignal.switchToLatest subscribeNext:^(id x) {
+		NSLog(@"%@",x); // 3  ====>  2
+	}];
+	
+	[signalOfSignal sendNext:subject1];
+	[signalOfSignal sendNext:subject3];
+
+	[subject2 sendNext:@2];//
+	[subject3 sendNext:@3];
+	[subject1 sendNext:@1];
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[signalOfSignal sendNext:subject2];
+		[subject2 sendNext:@2];
+		[subject3 sendNext:@3];
+		[subject1 sendNext:@1];
+	});
+```
+
+
+### flatten
+//TODO 还没到搞懂
+
+
 
 
