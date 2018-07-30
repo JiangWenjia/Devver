@@ -7,7 +7,11 @@
 | [杨萧玉](http://yulingtianxia.com) | 杨萧玉的博客 |
 | [雷纯锋](http://blog.leichunfeng.com/blog/archives/) | 雷纯锋 |
 
+# 网站
 
+[ios老司机周报](https://juejin.im/user/5a52075e6fb9a01c9d31b107/posts)
+
+[nshipster-中文（推荐）](https://nshipster.cn/)
 
 # Objective-C
 
@@ -38,6 +42,16 @@
 ## FMDB
 [基础使用](https://www.jianshu.com/p/4eb22deadba6)
 # ios
+
+## UIView
+[揭秘ios布局](https://juejin.im/post/5a951c655188257a804abf94#heading-5)
+
+[UIView](https://www.cnblogs.com/snake-hand/p/3190021.html)
+
+https://www.jianshu.com/p/4a62c10a36f1
+
+## CALayer 
+[很不错的书](https://zsisme.gitbooks.io/ios-/content/)
 
 ## WKWebView
 
