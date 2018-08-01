@@ -245,7 +245,7 @@ keyPath 使用点语法
 
 ```
 
-## 数组
+## 字典
 
 ```objc
 @implementation People
