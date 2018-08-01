@@ -67,3 +67,16 @@ https://www.jianshu.com/p/4a62c10a36f1
 ## WKWebView
 
 [WKWebView-使用](https://www.jianshu.com/p/4fa8c4eb1316)
+
+# 基础
+
+## KVC & KVO
+[苹果官网](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueCoding/index.html#//apple_ref/doc/uid/10000107-SW1)
+[objc中国](https://objccn.io/issue-7-3/)
+[KVC比较全](https://www.jianshu.com/p/45cbd324ea65)
+[KVO实现原理](https://www.jianshu.com/p/e59bb8f59302)
+
+
+## LLDB调试
+
+[Objc中国LLDB调试](https://objccn.io/issue-19-2/)
