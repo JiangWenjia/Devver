@@ -2,6 +2,32 @@
 
 [阮一峰flex参考资料](http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html)
 
+# 总结
+
+##容器属性
+- flex-direction:主轴方向<br>
+`row`  `row-reverse`  `column`  `column-reverse`
+- flex-wrap: 换行<br>
+  `nowrap`  `wrap`  `wrap-reverse`
+  
+- flex-flow: direction-wrap 缩写
+- justify-content:主轴对齐方式<br>
+`flex-start`  `flex-end`  `center`  `space-between`  `space-around`
+- align-items: 交叉轴对齐方式<br>
+`flex-start`  `flex-end`  `center`  `baseline`  `stretch`
+- align-content:多根轴线的对齐方式，单个不起作用<br>
+`flex-start`  `flex-end`  `center`  `space-between`  `space-around`
+
+## 项目属性
+
+- order:排列顺序，越小越靠前
+- flex-grow:剩余空间放大比例 默认0，不放大
+- flex-shrink:缩小比例，默认1:
+- flex-basis:main-size 默认auto
+- flex： grow-shrik-basis 缩写 auto（1，1，auto）none（0 0 auto）
+- align-self：覆盖父元素的align-item，项目自定义 <br>
+`auto`  `flex-start`  `flex-end`  `center`  `baseline`  `stretch`;
+
 # flex-direction
 **元素排列的方向**（主轴的方向）
 
@@ -150,4 +176,174 @@ none （0 0 auto）
 ```
 
 ![](media/15331887681129.jpg)
+
+
+## 骰子实例
+
+```css
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            background-color: whitesmoke;
+            margin: 100px;
+            border: 3px solid white;
+            justify-content: space-between;
+        }
+
+        .item {
+            width: 40px;
+            height: 40px;
+            background-color: black;
+            border-radius: 20px;
+        }
+
+        body {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="item one"></div>
+        <div class="item two"></div>
+    </div>
+</body>
+</html>
+```
+
+![](media/15331913422355.jpg)
+
+<hr>
+
+
+```css
+ flex-direction: column;
+ justify-content: space-between;
+```
+
+![](media/15331914340367.jpg)
+
+<hr>
+
+```css
+flex-direction: column;
+justify-content: space-between;
+align-items: center;
+```
+![](media/15331915001203.jpg)
+
+<hr>
+
+```css
+        .box {
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .item:nth-child(1) {
+            align-self: flex-start;
+        }
+```
+//这个思路不好，应该box不用写align-items  第二个元素写align-self
+
+![](media/15331920206778.jpg)
+
+<hr>
+
+```
+        .item:nth-child(2) {
+            align-self: center;
+        }
+        .item:nth-child(3) {
+            align-self: flex-end;
+        }
+
+```
+
+![](media/15331921861852.jpg)
+
+<hr>
+
+```css
+            flex-wrap: wrap;
+            align-content: space-between;
+            justify-content: flex-end;
+```
+
+![](media/15331923814489.jpg)
+
+<hr>
+
+```css
+        .box {
+            flex-wrap: wrap;
+            align-content: space-between;
+        }
+
+
+        .column {
+            flex-basis: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+```
+
+![](media/15331926808502.jpg)
+<hr>
+
+```css
+        .box {
+            flex-wrap: wrap;
+            align-content: space-between;
+        }
+```
+
+![](media/15331928503162.jpg)
+
+<hr>
+
+```
+   .box {
+            flex-wrap: wrap;
+            flex-direction: column;
+            align-content: space-between;
+        }
+```
+
+![](media/15331929759690.jpg)
+
+
+<hr>
+
+```css
+    <style>
+        .box {
+            flex-wrap: wrap;
+        }
+
+
+        .column {
+            display: flex;
+            flex-basis: 100%;
+        }
+
+        .column:nth-child(2) {
+            justify-content: center;
+        }
+
+        .column:last-child {
+            justify-content: space-between;
+        }
+
+    </style>
+```
+
+![](media/15331932774022.jpg)
 
