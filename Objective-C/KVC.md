@@ -277,7 +277,7 @@ keyPath 使用点语法
 
 2.一些集合操作 `@sum`,`@min`,`@max`,`@avg`,`@count`
 
-```
+```objc
     NSArray *array = @[@"aaaa",@"bbbb",@"ccccc"];
     NSArray *changeArray = [array valueForKey:@"capitalizedString"];
     /*     (

@@ -75,7 +75,7 @@ https://www.jianshu.com/p/4a62c10a36f1
 [objc中国](https://objccn.io/issue-7-3/)
 [KVC比较全](https://www.jianshu.com/p/45cbd324ea65)
 [KVO实现原理](https://www.jianshu.com/p/e59bb8f59302)
-
+[nshipster的KVO推荐](https://nshipster.cn/key-value-observing/)
 
 ## LLDB调试
 
