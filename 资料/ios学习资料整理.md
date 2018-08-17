@@ -68,6 +68,10 @@ https://www.jianshu.com/p/4a62c10a36f1
 
 [WKWebView-使用](https://www.jianshu.com/p/4fa8c4eb1316)
 
+## UIImage
+[API](https://www.jianshu.com/p/e9aa48155c11)
+[雷纯峰-图片的解压缩](https://www.jianshu.com/p/748f9abafff8)
+[图片拉伸.9方式](https://blog.csdn.net/zhongad007/article/details/78404232)
 # 基础
 
 ## KVC & KVO
