@@ -47,6 +47,10 @@
 ## FMDB
 [基础使用](https://www.jianshu.com/p/4eb22deadba6)
 
+## QMUI
+[QMUI](http://qmuiteam.com/ios)
+[代码块](https://github.com/QMUI/QMUI_iOS_CodeSnippets)s
+
 # ios
 
 ## dispatch_source
@@ -84,7 +88,10 @@ https://www.jianshu.com/p/4a62c10a36f1
 ## LLDB调试
 
 [Objc中国LLDB调试](https://objccn.io/issue-19-2/)
+[LLDB简书-好理解推荐](https://www.jianshu.com/p/e89af3e9a8d7)
 [LLDB](https://blog.csdn.net/baihuaxiu123/article/details/51316510)
 [Chisel-基础使用](https://www.jianshu.com/p/d5d8c7dbce55)
 [Chisel](https://www.jianshu.com/p/570dc9287e5e)
 [Chisel](https://www.jianshu.com/p/afaaacc55460)
+[LLDB](https://www.jianshu.com/p/e89af3e9a8d7)
+
