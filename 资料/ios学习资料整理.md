@@ -97,3 +97,9 @@ https://www.jianshu.com/p/4a62c10a36f1
 [Chisel](https://www.jianshu.com/p/afaaacc55460)
 [LLDB](https://www.jianshu.com/p/e89af3e9a8d7)
 
+## 宏
+[喵神](https://onevcat.com/2014/01/black-magic-in-macro/)
+
+## Swift
+
+[极客学院wifi](https://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html)
