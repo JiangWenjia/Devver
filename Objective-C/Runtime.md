@@ -16,12 +16,14 @@ id objc_msgSend ( id self, SEL op, ... );
 映射方法的C字符串、区分方法的ID，数据结构就是SEL
 
 ```objc
+/// An opaque type that represents a method selector.
 typedef struct objc_selector *SEL;
+
 ```
 
 不同的类的方法选择器是相同的，方法名字相同变量类型不同方法选择器也是相同的。
 
-可以使用@selector() 或者 sel_registerName 函数获取
+可以使用`@selector()` 或者 `sel_registerName` 函数获取
 
 ## id
 
